@@ -27,9 +27,10 @@ public class TestController : ControllerBase
             messages.Value = message;
             var producer = _producer.GetProducer("ProducerTest");
             producer.SendMessage(new Message<string, string>[] { messages });
-            return Ok();
+            return Ok("Success");
 
-        }catch (Exception ex)
+        } 
+        catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }

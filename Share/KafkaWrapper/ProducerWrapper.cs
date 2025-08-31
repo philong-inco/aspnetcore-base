@@ -2,42 +2,52 @@
 
 namespace Share.KafkaWrapper;
 
-public class ProducerWrapper //: IDisposable
+public class ProducerWrapper : IDisposable
 {
-    private  IProducer<string, string> _producer;
+    private IProducer<string, string> _producer;
+    private readonly IProducer<string, string> _nonTransactionalProducer;
+    private readonly IProducer<string, string> _transactionProducer;
     public ProducerSetting Setting { get; set; }
 
     public ProducerWrapper(ProducerSetting setting)
     {
         Setting = setting;
+        _nonTransactionalProducer = new ProducerBuilder<string, string>(Setting).Build();
         Setting.TransactionalId = Setting.Id;
-        //_producer = new ProducerBuilder<string, string>(Setting).Build();
+        _transactionProducer = new ProducerBuilder<string, string>(Setting).Build();
+        _producer = _nonTransactionalProducer;
     }
 
     public async void SendMessage(Message<string, string>[] messages)
     {
-
-        //var producerConfig = new ProducerSetting()
-        //{
-        //    BootstrapServers = "localhost:19092,localhost:29092,localhost:39092",
-        //};
-
-        //var producer = new ProducerBuilder<string, string>(producerConfig).Build();
-        _producer = new ProducerBuilder<string, string>(Setting).Build();
-
-        //var producertest = new ProducerBuilder<string, string>(Setting).Build();
-
         foreach (var message in messages)
             _producer.Produce(Setting.Topic, message);
     }
+    public void OnModeTransactional()
+    => _producer = _transactionProducer;
 
-    public void InitTransaction() => _producer.InitTransactions(TimeSpan.FromSeconds(10));
+    public void OffModeTransactional()
+    => _producer = _nonTransactionalProducer;
+
+    public void InitTransaction()
+    {
+        OnModeTransactional();
+        _producer.InitTransactions(TimeSpan.FromSeconds(5));
+    }
 
     public void BeginTransaction() => _producer.BeginTransaction();
 
-    public void CommitTransaction() => _producer.CommitTransaction();
+    public void CommitTransaction()
+    {
+        OffModeTransactional();
+        _producer.CommitTransaction();
+    }
 
-    public void AbortTransaction() => _producer.AbortTransaction();
+    public void AbortTransaction()
+    {
+        OffModeTransactional();
+        _producer.AbortTransaction();
+    }
 
-    //public void Dispose() => _producer?.Dispose();
+    public void Dispose() => _producer?.Dispose();
 }
