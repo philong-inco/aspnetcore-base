@@ -14,7 +14,10 @@
   <ItemGroup>
     <Folder Include="Controllers\" />
     <Folder Include="BackgroundTask\" />
-    <Folder Include="Extensions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Share\Share.csproj" />
   </ItemGroup>
 
 </Project>

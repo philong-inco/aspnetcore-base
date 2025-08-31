@@ -1,4 +1,7 @@
 ﻿using Confluent.Kafka;
+using Share.KafkaManager.ConsumerManager;
+using Share.KafkaManager.ProducerManager;
+using Share.KafkaWrapper;
 
 namespace Main.Setting;
 
@@ -23,20 +26,24 @@ public class AppSetting
         var totalInstances = serviceInformation.GetValue<int>("TotalInstances");
 
         // Consumer settings map
-        var consumerSettings = configuration.GetSection("ConsumerConfigs").GetChildren();
+        var consumerSettings = configuration.GetSection("ConsumerConfigs").Get<ConsumerSetting[]>();
         foreach (var consumerSetting in consumerSettings)
-        {
-            
-        }
+            consumerSetting.GroupId += $"-{instanceNumber}@{totalInstances}";
 
         // Producer settings map
-        var producerSettings = configuration.GetSection("ProducerConfigs").GetChildren();
-        foreach (var producerSetting in producerSettings)
+        var producerSettings = configuration.GetSection("ProducerConfigs").Get<ProducerSetting[]>();
+
+        var appSetting = new AppSetting
         {
+            DBDefaultTableSchema = configuration.GetValue<string>(nameof(DBDefaultTableSchema)),
+            DB1ConnectionString = configuration.GetValue<string>(nameof(DB1ConnectionString)),
+            DB2ConnectionString = configuration.GetValue<string>(nameof(DB2ConnectionString)),
+            InstanceNumber = instanceNumber,
+            TotalInstances = totalInstances,
+            ConsumerSettings = consumerSettings,
+            ProducerSettings = producerSettings
+        };
 
-        }
-
-        var appSetting = new AppSetting();
         return appSetting;
     }
 
