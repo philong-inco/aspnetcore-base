@@ -1,6 +1,7 @@
 ﻿using Confluent.Kafka;
-using Microsoft.AspNetCore.Http;
+using Main.Common;
 using Microsoft.AspNetCore.Mvc;
+using Share.KafkaManager.ConsumerManager;
 using Share.KafkaManager.ProducerManager;
 
 namespace Main.Controller;
@@ -10,10 +11,12 @@ namespace Main.Controller;
 public class TestController : ControllerBase
 {
     private readonly IKafkaProducerManager _producer;
+    private readonly IKafkaConsumerManager _consumer;
 
-    public TestController(IKafkaProducerManager producer)
+    public TestController(IKafkaProducerManager producer, IKafkaConsumerManager consumer)
     {
         _producer = producer;
+        _consumer = consumer;
     }
 
     [HttpGet("send-massage")]
@@ -37,9 +40,31 @@ public class TestController : ControllerBase
 
     }
 
-    [HttpGet("1")] 
-    public async Task<IActionResult> Test()
+    [HttpGet("disable-comsumer")]
+    public async Task<IActionResult> DisableConsumer()
     {
-        return Ok("vcl");
+        try
+        {
+            _consumer.StopConsumer(Constant.ConsumerTestId);
+            return Ok("Success");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpGet("enable-comsumer")]
+    public async Task<IActionResult> EnableConsumer()
+    {
+        try
+        {
+            _consumer.StartConsumer(Constant.ConsumerTestId);
+            return Ok("Success");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }

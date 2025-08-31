@@ -36,4 +36,13 @@ public static class HostExtensions
 
         return host;
     }
+
+    public static IHost RunConsumers(this IHost host, Action<IKafkaConsumerManager> manager)
+    {
+        var serviceProvider = host.Services;
+        var kafkaConsumerManager = (IKafkaConsumerManager)serviceProvider.GetRequiredService(typeof(IKafkaConsumerManager));
+        manager(kafkaConsumerManager);
+
+        return host;
+    }
 }
