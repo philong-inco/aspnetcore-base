@@ -11,5 +11,6 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IKafkaConsumerManager, KafkaConsumerManager>();
         services.AddSingleton<IKafkaProducerManager, KafkaProducerManager>();
         return services;    
-    }
+    } 
+    
 }

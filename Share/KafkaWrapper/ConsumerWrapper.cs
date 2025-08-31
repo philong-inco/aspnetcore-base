@@ -37,6 +37,8 @@ public class ConsumerWrapper
                         if (consumerResult != null)
                         {
                             // Thực hiện logic xử lý tin nhắn ở đây
+                            Console.WriteLine($"ConsumerResult: {consumerResult.Key}, {consumerResult.Value}");
+
                         }
                     }
                     catch (ConsumeException ex)
