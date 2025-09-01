@@ -1,7 +1,7 @@
 ﻿using Confluent.Kafka;
 using Share.KafkaManager.ConsumerManager;
 using Share.KafkaManager.ProducerManager;
-using Share.KafkaWrapper;
+using Share.KafkaSetting;
 
 namespace Main.Setting;
 

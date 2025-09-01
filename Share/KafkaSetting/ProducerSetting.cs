@@ -1,6 +1,6 @@
 ﻿using Confluent.Kafka;
 
-namespace Share.KafkaWrapper;
+namespace Share.KafkaSetting;
 
 public class ProducerSetting : ProducerConfig
 {

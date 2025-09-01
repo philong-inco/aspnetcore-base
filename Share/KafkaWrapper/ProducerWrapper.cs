@@ -1,4 +1,5 @@
 ﻿using Confluent.Kafka;
+using Share.KafkaSetting;
 
 namespace Share.KafkaWrapper;
 
