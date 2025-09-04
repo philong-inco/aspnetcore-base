@@ -4,7 +4,7 @@ namespace Share.KafkaManager.ConsumerManager;
 
 public class KafkaConsumerManager : IKafkaConsumerManager
 {
-    private readonly Dictionary<string, ConsumerWrapper> _consumers;
+    private readonly Dictionary<string, ConsumerWrapper> _consumers = new();
 
     public void AddConsumer(ConsumerWrapper consumerWrapper)
     {

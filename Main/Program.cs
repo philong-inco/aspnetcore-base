@@ -1,8 +1,13 @@
 using Confluent.Kafka;
+using Main.Common;
+using Main.Extensions;
 using Main.Setting;
 using Share.Extentsions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var appSetting = AppSetting.MapValue(builder.Configuration);
+builder.Services.AddSingleton(typeof(AppSetting));
 
 // Add services to the container.
 builder.Services.AddKafkaManager();
@@ -13,8 +18,15 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-app.InitKafkaConsumer();
-app.InitKafkaProducer();
+app.InitKafkaConsumer(appSetting);
+app.InitKafkaProducer(appSetting);
+
+// Run consumer
+app.RunConsumers(kafkaConsumerManager =>
+{
+    kafkaConsumerManager.StartConsumer(Constant.ConsumerTestId);
+});
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -22,7 +34,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

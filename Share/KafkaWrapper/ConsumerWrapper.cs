@@ -1,4 +1,5 @@
 ﻿using Confluent.Kafka;
+using Share.KafkaSetting;
 
 namespace Share.KafkaWrapper;
 
@@ -22,7 +23,7 @@ public class ConsumerWrapper
         _cancelTokenSource = new CancellationTokenSource();
         var token = _cancelTokenSource.Token;
 
-        _runningTask = Task.Run(() =>
+        _runningTask = Task.Factory.StartNew(() =>
         {
             using var consumer = new ConsumerBuilder<string, string>(Setting).Build();
             consumer.Subscribe(Setting.Topic);
@@ -37,6 +38,8 @@ public class ConsumerWrapper
                         if (consumerResult != null)
                         {
                             // Thực hiện logic xử lý tin nhắn ở đây
+                            Console.WriteLine($"ConsumerResult: {consumerResult.Key}, {consumerResult.Value}");
+
                         }
                     }
                     catch (ConsumeException ex)
@@ -54,7 +57,7 @@ public class ConsumerWrapper
             {
                 consumer.Close();
             }
-        }, token);
+        }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
     }
 
     public void Stop()
